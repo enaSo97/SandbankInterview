@@ -38,6 +38,7 @@ const calculateProfitAndLoss = async (orders, res) => {
         const long = (tickerInfo.last * order.finalSize) - (order.finalPrice * order.finalSize);
         const short = (order.finalPrice * order.finalSize) - (tickerInfo.last * order.finalSize);
         acc.push({
+            orderId: order.id,
             priceDiff: priceDiff,
             long: long,
             short: short,

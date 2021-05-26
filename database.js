@@ -1,7 +1,8 @@
 const { response } = require('express');
+const firebase = require('./firebase');
 const mysql = require('mysql');
 
-
+// for security purose, these can go in the .env file and gitignore the .env file
 const con = mysql.createConnection({
     host: "sandbank-ena.cofdaw3zgftv.ca-central-1.rds.amazonaws.com",
     user: "admin",
@@ -16,7 +17,7 @@ con.connect(function (err) {
     con.query('USE main;');
     //con.query('DROP TABLE orders');
 
-    con.query('SELECT * FROM orders', (err, result, field) => {
+    con.query('SELECT * FROM users', (err, result, field) => {
         console.log(result);
     })
     //con.query('ALTER TABLE orders ADD COLUMN instrument_id VARCHAR(50) AFTER id;');
@@ -26,10 +27,24 @@ con.connect(function (err) {
     //con.end();
 });
 
+const identifyToken = (token, res) => {
+    return new Promise((resolve, reject) => {
+        con.query(`SELECT * FROM users WHERE accessToken='${token}'`, (err,rows) => {
+            if(err) reject(err);
+            if (rows.length){
+                resolve(true);
+            }else{
+                resolve(false);
+            }
+        })
+    })
+    
+}
 
 
 const addOrder = (order) => {
     //const date = new Date()
+    const currUser = firebase.auth().currentUser;
     console.log("order: ", order);
     con.query(`INSERT INTO main.orders (instrument_id, orderPrice, orderSize, finalPrice, finalSize, boughtAt) VALUES ('${order.instrument_id}', '${order.price}', '${order.size}', '${order.finalPrice}', '${order.finalSize}', '${order.boughtAt}')`, (err, rows) => {
         if (err) console.log("errrr: ", err);
@@ -54,4 +69,5 @@ const getOrderAfterBaseTime = (base_time, res, callback) => {
 module.exports = {
     addOrder,
     getOrderAfterBaseTime,
+    identifyToken,
 }
