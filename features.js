@@ -6,7 +6,6 @@ const mysql = require('mysql');
 
 router.post('/order', async (req, res) => {
     const { token, instrument_id, size, price, type1, type2 } = req.body
-    //console.log(instrument_id, size, price, type1, type2);
 
     var orderData = await Utils.getOrderBook(instrument_id);
     var { asks, bids } = orderData;
@@ -101,7 +100,7 @@ router.post('/order', async (req, res) => {
                             var i = 0;
                             var sizeToBuy = size;
                             while (sizeToBuy > 0) {
-                                //const date = new Date().toISOString().slice(0, 19).replace('T', ' ');
+                                const date = new Date().toISOString().slice(0, 19).replace('T', ' ');
                                 sizeToBuy -= bids[i][3];
                                 const order = {
                                     price: price,
@@ -109,6 +108,7 @@ router.post('/order', async (req, res) => {
                                     finalPrice: bids[i][0],
                                     finalSize: bids[i][3],
                                     instrument_id: instrument_id,
+                                    boughtAt: date,
                                 }
                                 finalOrder.push(order);
                                 console.log(price, size, bids[i][0], bids[i][3]);

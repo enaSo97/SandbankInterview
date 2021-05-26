@@ -31,9 +31,8 @@ const getTicker = async () => {
 
 const calculateProfitAndLoss = async (orders, res) => {
     const ticker = await getTicker();
-    //console.log(ticker);
     const result = orders.reduce((acc, order) => {
-        const tickerInfo = ticker.find(el => el.instrument_id === order.instrument_id);
+        const tickerInfo = ticker.find(el => el.instrument_id === order.instrument_id); // gets the ticker info of specific instrument id
         const priceDiff = tickerInfo.last - order.finalPrice;
         const long = (tickerInfo.last * order.finalSize) - (order.finalPrice * order.finalSize);
         const short = (order.finalPrice * order.finalSize) - (tickerInfo.last * order.finalSize);
@@ -46,7 +45,6 @@ const calculateProfitAndLoss = async (orders, res) => {
         })
         return acc;
     }, []);
-    //console.log(result);
     res.json(result);
 }
 
